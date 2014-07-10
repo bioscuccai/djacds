@@ -1,0 +1,18 @@
+{% for dc in democomments %}
+    <a id="#comment_{{dc.pk}}"></a>
+    <blockquote>
+    {{dc.democomment|safe|linebreaks}}
+    <footer>
+        <a href="#comment_{{dc.pk}}">#{{dc.pk}}</a>
+        {{dc.user.username|safe}} ({{dc.time}})
+        {% if user.is_authenticated %}
+            <a href="#" data-cid="{{dc.pk}}" class="reply_link">reply</a>
+            {% if dc.reply %}
+            (reply to: <a href="#comment_{{dc.reply.pk}}">#{{dc.reply}}</a>)
+            {%endif%}
+        {%endif%}
+
+    </footer>
+    </blockquote>
+    <br/>
+{% endfor %}

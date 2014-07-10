@@ -1,0 +1,38 @@
+{% extends "cds/mainpage.html" %}
+{% block main %}
+order by:
+<a href="{% url 'cds_listdemos' %}?order_by=title&ordering=desc">title <span class="glyphicon glyphicon-inbox"></span></a> /
+<a href="{% url 'cds_listdemos' %}?order_by=title&ordering=asc">title <span class="glyphicon glyphicon-download"></span></a>
+||
+<a href="{% url 'cds_listdemos' %}?order_by=game&ordering=desc">game <span class="glyphicon glyphicon-inbox"></span></a> /
+<a href="{% url 'cds_listdemos' %}?order_by=game&ordering=asc">game <span class="glyphicon glyphicon-download"></span></a>
+||
+<a href="{% url 'cds_listdemos' %}?order_by=uploaded&ordering=desc">uploaded <span class="glyphicon glyphicon-inbox"></span></a> /
+<a href="{% url 'cds_listdemos' %}?order_by=uploaded&ordering=asc">uploaded <span class="glyphicon glyphicon-download"></span></a>
+<table class="table table-striped">
+    <thead>
+        <th>title</th>
+        <th>game</th>
+        <th>pct</th>
+        <th>suspected cheats</th>
+        <th>by</th>
+        <th>date</th>
+    </thead>
+    {% for demo in demos %}
+        <tr>
+            <td><a href="{{demo.get_absolute_url}}">{{demo.title}}</a></td>
+            <td><a href="{{demo.game.get_absolute_url}}" title="{{demo.game.title}}"><img alt="{{demo.game.title}}" src="/static/{{demo.game.get_icon_static}}" height='70'/></a></td>
+            <td>{{demo.yes_pct}} %</td>
+            <td>
+                {% for c in demo.infraction.all %}
+                    <a href="{{c.get_absolute_url}}">{{c}}</a>
+                {%endfor%}
+            </td>
+            <td>{{demo.uploader.username}}</td>
+            <td>{{demo.uploaded}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

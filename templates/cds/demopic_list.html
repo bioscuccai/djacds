@@ -1,0 +1,23 @@
+
+<div class="container">
+<div class="row">
+{% for pic in pics %}
+    <div class="col-xs-3">
+            <a href="/static/cds/image/{{pic.fileloc}}" rel="galeria" class="fancybox thumbnail" title="{{pic.description}}">
+                <img src="/static/cds/thumb/{{pic.fileloc}}"  class="img-responsive" alt="{{pic.description}}"/>
+            </a>
+            {{pic.description}}
+    </div>
+{% endfor %}
+</div>
+</div>
+{% comment %}
+{% for pic in pics %}
+    <div class="thumbnail">
+            <a href="/static/cds/image/{{pic.fileloc}}" rel="galeria" class="fancybox" title="{{pic.description}}">
+                <img src="/static/cds/thumb/{{pic.fileloc}}"  class="img-responsive" alt="{{pic.description}}"/>
+            </a>
+            {{pic.description}}
+    </div>
+{% endfor %}
+{% endcomment %}

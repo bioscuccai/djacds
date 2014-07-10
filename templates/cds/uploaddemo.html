@@ -1,0 +1,7 @@
+{% extends "cds/mainpage.html" %}
+{% block main %}
+<form method="post" action="{% url 'cds_uploaddemo' demo %}"  enctype="multipart/form-data">
+    {{form.as_p}}
+    <input type="submit" class="btn btn-primary"/>
+</form>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'cds/mainpage.html' %}
+{% block main %}
+{{request.path}}
+<h1><strong>{{demo.title}}</strong></h1>
+<div class="bs-callout bs-callout-info pull-left">
+    <dl>
+        <dt>game:</dt>
+            <dd><a href="{% url 'cds_demopergame' demo.game.pk %}">{{demo.game.title}}</a></dd>
+        <dt>uploader:</dt>
+            <dd>{{demo.uploader.username}}</dd>
+        <dt>uploaded:</dt>
+            <dd>{{demo.uploaded}}</dd>
+        <dt>infractions:</dt>
+            <dd>
+                <ul>
+                    {% for inf in demo.infraction.all %}
+                    <li><a href="{% url 'cds_demopercheat' demo.game.pk %}">{{inf.cheat_name}} ({{inf.cheat_class}})</a></li>
+                    {%endfor%}
+                </ul>
+            </dd>
+    </dl>
+    {% if demo.fileloc != "" %}
+        <a href="/static/cds/demo/{{demo.fileloc}}" class="btn btn-primary btn-lg">Download</a>
+    {% endif %}
+
+    {% if user = demo.uploader %}
+        <form action="{% url 'cds_uploaddemo' demo.pk %}" method="get">
+            <button class="btn btn-primary btn-lg">Upload demo</button>
+        </form>
+    {% endif %}
+    {% if user = demo.uploader %}
+        <form action="{% url 'cds_updatedemo' demo.pk %}" method="get">
+            <button class="btn btn-primary btn-lg">Edit</button>
+        </form>
+    {% endif %}
+</div>
+<div id="vote_info" class="bs-callout bs-callout-info pull-right" style="width: 250px">
+    <h2>Voting</h2>
+    {% if total != 0 %}
+    <div class="bs-callout bs-callout-warning">
+        <div style="height:20px;width:100px;text-align:right;">|</div>
+        <div style="height:20px;width:{{y_pct}}px;background-color:green;"></div><h6><small>(yes: {{vote_yes}})</small></h6>
+        <div style="height:20px;width:{{n_pct}}px;background-color:red;"></div><h6><small>(no: {{vote_no}})</small></h6>
+    </div>
+    {% endif %}
+    {% if can_vote %}
+    <h4>Did he cheat?</h4>
+        <form action="{% url 'cds_voting' demo.pk %}" method="post" class="form-inline">
+            <input type="hidden" value="1" name="vote"/>
+            <input type="submit" value="yes" name="v" class="btn btn-success btn-lg"/>
+        </form>
+        <form action="{% url 'cds_voting' demo.pk %}" method="post" class="form-inline">
+            <input type="hidden" value="0" name="vote"/>
+            <input type="submit" value="no" name="v" class="btn btn-danger btn-lg"/>
+        </form>
+{% endif %}
+</div>
+<p class="lead" style="padding-top:25px; margin-right: 25px">{{demo.description|safe|linebreaks}}</p>
+<br style="clear:both">
+
+
+<h2>Screenshots</h2>
+<div id="pictures">
+<img src="/static/fancybox/fancybox_loading.gif"/>
+</div>
+{% if user = demo.uploader %}
+    <h2>Add picture</h2>
+    <form enctype="multipart/form-data" method="post" action="{% url 'cds_demopic' demo.pk %}" id="uploadimage_form">
+        {{image_form.as_p}}
+        <input type="submit" value="go" class="btn btn-primary"/>
+    </form>
+{% endif %}
+<br>
+<h2>Comments</h2>
+<div id="commentdiv">
+<img src="/static/fancybox/fancybox_loading.gif"/>
+</div>
+<div id="comment_form_div">
+    <div id="reply_marker">Reply to: <span id="reply_post_marker"></span>
+     <a href="#" id="reply_marker_close">&times;</a></p>
+    </div>
+    <form method="post" action="{% url 'cds_adddemocomment' demo.pk %}" id="comment_form">
+        {{comment_form.as_p}}
+        <input type="hidden" name="reply_to" id="reply_to" value="-1"/>
+        <input type="submit" value="addcomment" id="comment_submit" class="btn btn-primary"/>
+    </form>
+</div>
+{% endblock %}
+{% block head %}
+<script src="/static/jquery-1.11.0.min.js"></script>
+<script src="/static/fancybox/jquery.fancybox.pack.js"></script>
+<link rel="stylesheet" href="/static/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+{% endblock %}
+{% block js %}
+<script>
+    function loadComments(){
+        $("#commentdiv").load("{% url 'cds_listdemocomments' demo.pk %}", assignReplyLinks);
+        //assignReplyLinks();
+    }
+    function assignReplyLinks(){
+        $(".reply_link").click(function(e){
+            var cid=$(this).data("cid");
+            $("#reply_to").val(cid);
+
+            $("#reply_post_marker").text(cid);
+            $("#reply_marker").show();
+            return false;
+        });
+    }
+
+    var fabo={
+            helpers:{
+                title:{
+                    type: 'inside'
+                }
+            }
+        };
+
+    $("#pictures").load("{% url 'cds_demopic' demo.pk %}");
+
+    $(".fancybox").fancybox(fabo);
+
+    $("#reply_marker_close").click(function(e){
+        //e.preventDefault();
+        $("#reply_marker").hide();
+        return false;
+    });
+
+    $("#comment_form").submit(function(e){
+        e.preventDefault();
+        $.post("{% url 'cds_adddemocomment' demo.pk %}",
+            $("#comment_form").serializeArray(), function(data){
+                $("#comment_form")[0].reset();
+                loadComments();
+            }
+        );
+        return false;
+    });
+
+    loadComments();
+    $("#reply_marker").hide();
+/*
+    $("#uploadimage_form").submit(function(e){
+        $("#pictures").load("{% url 'cds_demopic' demo.pk %}",
+            $("#uploadimage_form").serializeArray()
+        );
+        $(".fancybox").fancybox(fabo);
+        return false;
+    });*/
+</script>
+{% endblock %}
+

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="/static/bootstrap/bs-doc.css">
+{% block head %}{% endblock %}
+</head>
+<body style="margin-left: 30px; margin-right:30px">
+
+<nav role="navigation" class="nav navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="{% url 'cds_listdemos' %}" class="navbar-brand">ide ugyan mi a faszt írjak</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'cds_listdemos' %}">list demos</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'cds_addgame' %}">add game</a></li>
+                    <li><a href="{% url 'cds_adddemo' %}">add demo</a></li>
+                    <li><a href="{% url 'cds_addcheat' %}">add cheat type</a></li>
+                {% endif %}
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li class="active"><a href="#">{{user.username}}</a></li>
+                    <li><a href="{% url 'acc_logoutpage' %}?return=/cds">[logout]</a></li>
+                {% else %}
+                    <li><a href="{% url 'acc_loginpage' %}?return=/cds">login</a></li>
+                    <li><a href="{% url 'acc_registerpage' %}?return=/cds">register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div>
+    <div></div>
+    <div class="span8">
+        {% block main %}
+
+        {% endblock %}
+    </div>
+    <div></div>
+</div>
+{% block js %}
+{% endblock %}
+</body>
+</html>

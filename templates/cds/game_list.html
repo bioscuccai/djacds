@@ -1,0 +1,12 @@
+{% extends 'cds/mainpage.html' %}
+{% block main %}
+<table>
+{% for game in games %}
+    <tr>
+        <td><a href="{{game.get_absolute_url}}">{{game.title}}</a></td>
+        <td>{{game.short_name}}</td>
+        <td>{{game.icon}}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
